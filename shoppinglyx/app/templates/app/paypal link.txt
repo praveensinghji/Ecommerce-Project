@@ -1,0 +1,11 @@
+https://developer.paypal.com/developer/accounts
+
+
+https://developer.paypal.com/docs/
+
+
+https://developer.paypal.com/demo/checkout/#/pattern/client
+
+
+https://www.sandbox.paypal.com/
+
