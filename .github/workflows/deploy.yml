@@ -1,17 +1,35 @@
 name: Deploy Site
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "GithubLive"]
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
     environment: deploy
     steps:
       - uses: actions/checkout@v3
-      - name: Build Project
-        run: npm install && npm run build
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          python-version: '3.11'  # Adjust to your Python version
+      
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Collect Static Files
+        run: python manage.py collectstatic --noinput
+      
+      - name: Run Migrations
+        run: python manage.py migrate
+      
+      - name: Deploy to Server
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        run: |
+          # Example: Deploy via SSH to your server
+          mkdir -p ~/.ssh
+          echo "$DEPLOY_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no user@your-server.com 'cd /path/to/project && git pull && pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --noinput && systemctl restart gunicorn'
