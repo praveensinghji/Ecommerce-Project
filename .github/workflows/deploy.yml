@@ -11,7 +11,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.12.4'  # Adjust to your Python version
+          python-version: '3.12.4'
       
       - name: Install Dependencies
         run: |
@@ -19,17 +19,18 @@ jobs:
           pip install -r requirements.txt
       
       - name: Collect Static Files
+        working-directory: ./shoppinglyx
         run: python manage.py collectstatic --noinput
       
       - name: Run Migrations
+        working-directory: ./shoppinglyx
         run: python manage.py migrate
       
       - name: Deploy to Server
         env:
           DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
         run: |
-          # Example: Deploy via SSH to your server
           mkdir -p ~/.ssh
           echo "$DEPLOY_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no user@your-server.com 'cd /path/to/project && git pull && pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --noinput && systemctl restart gunicorn'
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no user@your-server.com 'cd /path/to/project && git pull && pip install -r requirements.txt && python manage.py migrate && python manage[...]
